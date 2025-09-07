@@ -1,9 +1,18 @@
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
+
 const app = express();
+
+app.use(cors({
+  origin: "*", // hoặc giới hạn domain: ["https://messenger-app-v8ii.onrender.com"]
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+}));
+
 app.use(express.json());
 
 app.post("/chatbot", async (req, res) => {
@@ -28,7 +37,9 @@ app.post("/chatbot", async (req, res) => {
     const data = await response.json();
 
     if (!data?.candidates?.[0]?.content?.parts?.[0]?.text) {
-      return res.status(500).json({ error: "Gemini không trả lời", raw: data });
+      return res
+        .status(500)
+        .json({ error: "Gemini không trả lời", raw: data });
     }
 
     const reply = data.candidates[0].content.parts[0].text;
